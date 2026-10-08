@@ -7,9 +7,9 @@ Projeto Final de Engenharia de Sistemas Distribuídos — UFPB, 2026.2.
 
 | Integrante | Contato |
 | --- | --- |
-| Daniel Victor Carneiro Brandão da Costa | [e-mail] |
-| Davi Nasiasene Amorim | [e-mail] |
-| Ian Rocha Bittencourt | [e-mail] |
+| Daniel Victor Carneiro Brandão da Costa | danielvictorcarneiro21@gmail.com |
+| Davi Nasiasene Amorim | davi.ted@hotmail.com |
+| Ian Rocha Bittencourt | ianbittencourt03@gmail.com |
 
 ## Problema
 
@@ -36,13 +36,6 @@ Padrões considerados e descartados (com justificativa nos ADRs): SAGA/Orchestra
 ## Arquitetura
 
 > TODO (Projeto 02): inserir o diagrama C4 níveis 1 (contexto) e 2 (containers).
-
-```
-docs/
-└── c4/
-    ├── nivel-1-contexto.png
-    └── nivel-2-containers.png
-```
 
 ### Serviços
 
@@ -117,8 +110,7 @@ docker compose up --build
 
 | Ferramenta | Onde atuou | Como foi orientada | O que funcionou | O que precisou ser corrigido ou foi descartado |
 | --- | --- | --- | --- | --- |
-| Claude | Escolha do tema, avaliação dos padrões e rascunho da proposta de tema | [contexto fornecido: documento do projeto e material de padrões] | [preencher] | [preencher] |
-| [Ferramenta] | [geração de código / revisão / testes / documentação] | [preencher] | [preencher] | [preencher] |
+| Claude | Avaliação dos padrões e rascunho da proposta de tema | [contexto fornecido: documento do projeto e material de padrões] | [preencher] | - |
 
 ## Licença e atribuições
 
