@@ -110,7 +110,7 @@ docker compose up --build
 
 | Ferramenta | Onde atuou | Como foi orientada | O que funcionou | O que precisou ser corrigido ou foi descartado |
 | --- | --- | --- | --- | --- |
-| Claude | Avaliação dos padrões e rascunho da proposta de tema | [contexto fornecido: documento do projeto e material de padrões] | [preencher] | - |
+| Claude | Avaliação dos padrões e rascunho da proposta de tema | [contexto fornecido: documento do projeto e material de padrões] | Ajudou na criação do documento e definição de testes | - |
 
 ## Licença e atribuições
 
