@@ -58,7 +58,7 @@ Os ADRs ficam em [`docs/adr/`](docs/adr/).
 
 ## Stack
 
-TypeScript (Node.js) com Fastify · RabbitMQ · PostgreSQL · Redis · Docker Compose · GitHub Actions · k6 · Prometheus · Grafana · OpenTelemetry + Jaeger
+Python com FastAPI · RabbitMQ · PostgreSQL · Redis · Docker Compose · GitHub Actions · k6 · Prometheus · Grafana · OpenTelemetry + Jaeger
 
 ## Como executar
 
@@ -113,5 +113,3 @@ docker compose up --build
 | Claude | Avaliação dos padrões e rascunho da proposta de tema | [contexto fornecido: documento do projeto e material de padrões] | Ajudou na criação do documento e definição de testes | - |
 
 ## Licença e atribuições
-
-[Registrar aqui bibliotecas e códigos de terceiros usados, com atribuição.]
