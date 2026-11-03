@@ -1,0 +1,155 @@
+# Matrícula Escalável: ambiente local completo.
+#   docker compose up -d --build --wait   # sobe tudo e espera os healthchecks
+#   docker compose ps                     # todos devem aparecer como "healthy"
+#   docker compose down -v                # derruba e apaga os volumes
+
+# Configuração comum a todos os serviços Python (YAML anchor).
+x-python-service: &python-service
+  restart: unless-stopped
+  environment: &common-env
+    REDIS_URL: redis://redis:6379/0
+    RABBITMQ_URL: amqp://${RABBITMQ_USER:-matricula}:${RABBITMQ_PASS:-matricula}@rabbitmq:5672/
+  # Bulkhead na infraestrutura: nenhum serviço consome a máquina inteira.
+  deploy:
+    resources:
+      limits:
+        cpus: "0.50"
+        memory: 256M
+
+services:
+  # ---------- Infraestrutura ----------
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Executado só na primeira subida (com o volume vazio).
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    environment:
+      # O usuário "guest" padrão só aceita conexões de localhost,
+      # por isso criamos um usuário próprio.
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-matricula}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-matricula}
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # painel web: http://localhost:15672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------- Serviços da aplicação ----------
+  gateway:
+    <<: *python-service
+    build: ./services/gateway
+    environment:
+      <<: *common-env
+      SERVICE_NAME: gateway
+      INSCRICAO_URL: http://inscricao:8000
+      VAGAS_URL: http://vagas:8000
+      CONSULTA_URL: http://consulta:8000
+    ports: ["8000:8000"]
+    depends_on:
+      redis: { condition: service_healthy }
+      inscricao: { condition: service_healthy }
+      vagas: { condition: service_healthy }
+      consulta: { condition: service_healthy }
+
+  inscricao:
+    <<: *python-service
+    build: ./services/inscricao
+    environment:
+      <<: *common-env
+      SERVICE_NAME: inscricao
+    ports: ["8001:8000"]
+    depends_on:
+      redis: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  vagas:
+    <<: *python-service
+    build: ./services/vagas
+    environment:
+      <<: *common-env
+      SERVICE_NAME: vagas
+      DATABASE_URL: postgresql://vagas_user:vagas@postgres:5432/vagas
+    ports: ["8002:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  outbox-relay:
+    <<: *python-service
+    build: ./services/outbox-relay
+    environment:
+      <<: *common-env
+      SERVICE_NAME: outbox-relay
+      DATABASE_URL: postgresql://vagas_user:vagas@postgres:5432/vagas
+    ports: ["8003:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  consulta:
+    <<: *python-service
+    build: ./services/consulta
+    environment:
+      <<: *common-env
+      SERVICE_NAME: consulta
+      DATABASE_URL: postgresql://consulta_user:consulta@postgres:5432/consulta
+    ports: ["8004:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  notificacao:
+    <<: *python-service
+    build: ./services/notificacao
+    environment:
+      <<: *common-env
+      SERVICE_NAME: notificacao
+    ports: ["8005:8000"]
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+
+  # ---------- Observabilidade ----------
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports: ["9090:9090"] # http://localhost:9090
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASS:-admin}
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports: ["3001:3000"] # http://localhost:3000
+    depends_on: [prometheus]
+
+volumes:
+  postgres-data:

@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - run: ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [gateway, inscricao, vagas, outbox-relay, consulta, notificacao]
+    defaults:
+      run:
+        working-directory: services/${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt -r ../../requirements-dev.txt
+      - run: python -m pytest -q
+
+  compose:
+    # Sobe o ambiente inteiro e falha se algum healthcheck não passar.
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up -d --build --wait --wait-timeout 180
+      - run: docker compose ps
+      - run: curl --fail http://localhost:8000/health
+      - if: failure()
+        run: docker compose logs
+      - if: always()
+        run: docker compose down -v

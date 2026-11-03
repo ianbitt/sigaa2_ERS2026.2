@@ -1,0 +1,10 @@
+line-length = 100
+target-version = "py312"
+
+[lint]
+# E/F: erros básicos · I: ordem dos imports · UP: sintaxe moderna · B: bugs comuns
+select = ["E", "F", "I", "UP", "B"]
+
+[lint.isort]
+# "app" é o pacote local de cada serviço.
+known-first-party = ["app"]

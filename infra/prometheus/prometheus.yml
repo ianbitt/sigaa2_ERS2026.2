@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: servicos
+    static_configs:
+      - targets:
+          - gateway:8000
+          - inscricao:8000
+          - vagas:8000
+          - outbox-relay:8000
+          - consulta:8000
+          - notificacao:8000
