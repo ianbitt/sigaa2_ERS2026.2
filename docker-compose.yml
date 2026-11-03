@@ -1,15 +1,9 @@
-# Matrícula Escalável: ambiente local completo.
-#   docker compose up -d --build --wait   # sobe tudo e espera os healthchecks
-#   docker compose ps                     # todos devem aparecer como "healthy"
-#   docker compose down -v                # derruba e apaga os volumes
-
-# Configuração comum a todos os serviços Python (YAML anchor).
 x-python-service: &python-service
   restart: unless-stopped
   environment: &common-env
     REDIS_URL: redis://redis:6379/0
     RABBITMQ_URL: amqp://${RABBITMQ_USER:-matricula}:${RABBITMQ_PASS:-matricula}@rabbitmq:5672/
-  # Bulkhead na infraestrutura: nenhum serviço consome a máquina inteira.
+  # Bulkhead na infra: nenhum serviço consome a máquina inteira.
   deploy:
     resources:
       limits:
@@ -17,7 +11,7 @@ x-python-service: &python-service
         memory: 256M
 
 services:
-  # ---------- Infraestrutura ----------
+  # ---------- Infra ----------
   postgres:
     image: postgres:16-alpine
     environment:
@@ -25,7 +19,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      # Executado só na primeira subida (com o volume vazio).
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports: ["5432:5432"]
     healthcheck:
@@ -46,8 +39,6 @@ services:
   rabbitmq:
     image: rabbitmq:4-management
     environment:
-      # O usuário "guest" padrão só aceita conexões de localhost,
-      # por isso criamos um usuário próprio.
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-matricula}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-matricula}
     ports:
@@ -59,7 +50,7 @@ services:
       timeout: 5s
       retries: 10
 
-  # ---------- Serviços da aplicação ----------
+  # ---------- Serviços ----------
   gateway:
     <<: *python-service
     build: ./services/gateway
@@ -134,7 +125,7 @@ services:
     depends_on:
       rabbitmq: { condition: service_healthy }
 
-  # ---------- Observabilidade ----------
+  # ---------- Logs/stats ----------
   prometheus:
     image: prom/prometheus:v3.0.1
     volumes:
