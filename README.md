@@ -35,7 +35,13 @@ Padrões considerados e descartados (com justificativa nos ADRs): SAGA/Orchestra
 
 ## Arquitetura
 
-> TODO (Projeto 02): inserir o diagrama C4 níveis 1 (contexto) e 2 (containers).
+### C4 Nível 1 — Contexto
+
+![C4 Nível 1 — Contexto do Sistema de Matrículas](docs/c4/contexto-sistema-de-matriculas.png)
+
+### C4 Nível 2 — Containers
+
+![C4 Nível 2 — Containers do Sistema de Matrículas](docs/c4/containers-sistema-de-matriculas.png)
 
 ### Serviços
 
@@ -53,16 +59,14 @@ Os ADRs ficam em [`docs/adr/`](docs/adr/).
 
 | ADR | Decisão | Status |
 | --- | --- | --- |
-| 001 | Como garantir zero overbooking | A decidir (Projeto 02) |
-| 002 | [Broker: RabbitMQ] | A decidir |
+| [001](docs/adr/0001-vagas-dono-da-escrita-de-matricula.md) | Vagas como único dono da escrita de matrícula | Proposto |
+| [002](docs/adr/0002-read-model-proprio-da-consulta.md) | Read model próprio da Consulta (CQRS + Cache-Aside) | Proposto |
 
 ## Stack
 
 Python com FastAPI · RabbitMQ · PostgreSQL · Redis · Docker Compose · GitHub Actions · k6 · Prometheus · Grafana · OpenTelemetry + Jaeger
 
 ## Como executar
-
-> TODO: preencher quando o Docker Compose estiver pronto.
 
 ```bash
 # pré-requisitos: Docker e Docker Compose
@@ -71,9 +75,19 @@ cd sigaa2_ERS2026.2
 docker compose up --build
 ```
 
-- Gateway: `http://localhost:[porta]`
-- Grafana: `http://localhost:[porta]`
-- RabbitMQ (management): `http://localhost:[porta]`
+Por enquanto cada serviço só expõe `/health` e `/metrics` (esqueleto); a lógica de negócio entra ao longo do Projeto 03.
+
+| Serviço / painel | URL |
+| --- | --- |
+| Gateway | `http://localhost:8000` |
+| Inscrição | `http://localhost:8001` |
+| Vagas | `http://localhost:8002` |
+| Outbox Relay | `http://localhost:8003` |
+| Consulta | `http://localhost:8004` |
+| Notificação | `http://localhost:8005` |
+| Grafana | `http://localhost:3001` |
+| Prometheus | `http://localhost:9090` |
+| RabbitMQ (management) | `http://localhost:15672` |
 
 ## Testes
 
@@ -100,8 +114,8 @@ docker compose up --build
 
 | Entrega | Data | Status |
 | --- | --- | --- |
-| Projeto 01: grupo e tema | 09/10/2026 | Em andamento |
-| Projeto 02: documentação inicial | 06/11/2026 | Pendente |
+| Projeto 01: grupo e tema | 09/10/2026 | Concluído |
+| Projeto 02: documentação inicial | 06/11/2026 | Concluído |
 | Projeto 03: documentação final e apresentação | 11/12/2026 | Pendente |
 
 ## Ferramentas de IA utilizadas

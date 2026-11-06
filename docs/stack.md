@@ -17,7 +17,7 @@ A stack usa **uma única linguagem (Python) em todos os serviços**, escolhida p
 | Métricas | Prometheus + Grafana | Coleta das métricas RED (taxa, erros, duração) de todos os serviços e dashboards | Padrão de mercado e código aberto; o FastAPI expõe `/metrics` com uma biblioteca | Datadog e New Relic (pagos) |
 | Tracing | OpenTelemetry + Jaeger | Rastrear um pedido passando por Gateway, Inscrição, fila e Vagas | OpenTelemetry é o padrão aberto de instrumentação; Jaeger visualiza os traces localmente | Zipkin (viável, com ecossistema menor) |
 | Qualidade de código | Ruff + pytest | Lint, formatação e testes, no CI e localmente | Ruff substitui várias ferramentas (flake8, isort, black) e é muito rápido | flake8 + isort + black (três ferramentas para o mesmo resultado) |
-| Diagramas | Mermaid | Diagramas C4 versionados em `docs/c4/` | Diagrama como código: fica no repositório e o GitHub renderiza direto | draw.io (arquivo binário, difícil de revisar em PR); Structurizr (exige ferramenta extra) |
+| Diagramas | Mermaid (mermaid.live) | Diagramas C4 construídos em Mermaid e exportados como PNG, versionados em `docs/c4/` | Sintaxe simples de editar e versionar como texto, sem exigir ferramenta instalada; exportado como imagem para garantir que renderize igual em qualquer lugar (README, PDF, apresentação) | draw.io (arquivo binário, difícil de revisar em PR); Structurizr (exige ferramenta extra) |
 
 ## Bibliotecas Python previstas
 

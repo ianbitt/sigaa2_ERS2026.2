@@ -1,6 +1,6 @@
 # Padrões arquiteturais
 
-O projeto implementa e testa seis padrões (o mínimo exigido é 3). Cada um está ligado a um container do [diagrama C4 nível 2](c4/nivel-2-containers.png) e a um critério de sucesso da proposta.
+O projeto implementa e testa seis padrões (o mínimo exigido é 3). Cada um está ligado a um container do [diagrama C4 nível 2](c4/containers-sistema-de-matriculas.png) e a um critério de sucesso da proposta.
 
 ## Onde cada padrão aparece
 
