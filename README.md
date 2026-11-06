@@ -125,5 +125,8 @@ Por enquanto cada serviço só expõe `/health` e `/metrics` (esqueleto); a lóg
 | Ferramenta | Onde atuou | Como foi orientada | O que funcionou | O que precisou ser corrigido ou foi descartado |
 | --- | --- | --- | --- | --- |
 | Claude | Avaliação dos padrões e rascunho da proposta de tema | [contexto fornecido: documento do projeto e material de padrões] | Ajudou na criação do documento e definição de testes | - |
+| Claude | Diagramas C4 (níveis 1 e 2) | A equipe descreveu os atores, serviços e fluxos do sistema; Claude ensinou a notação C4 e a sintaxe Mermaid para montá-los | Ensinou a montar o diagrama; o conteúdo (atores, containers, fluxos) foi definido pela equipe | Alguns rótulos e setas foram ajustados manualmente após a primeira versão |
+| Claude | Documentação (README, ADRs, `docs/stack.md`, `docs/padroes.md`, `docs/equipe.md`) | Decisões e informações já definidas pela equipe (stack, padrões, divisão de tarefas) foram passadas como contexto para estruturar e redigir os documentos | Ajudou a manter os documentos organizados e consistentes entre si | Trechos desatualizados (TODOs, links, status) foram revisados e corrigidos manualmente depois |
+| Claude | `docker-compose.yml` e esqueleto dos serviços (FastAPI) | Pedimos explicações sobre healthchecks, variáveis de ambiente, Dockerfile e estrutura de um serviço FastAPI — não pedimos o código pronto | Ajudou a entender boas práticas de Docker Compose e FastAPI, servindo de guia para a implementação | O código final foi escrito pelos próprios alunos a partir da orientação; nada foi usado como gerado |
 
 ## Licença e atribuições
